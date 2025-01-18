@@ -276,6 +276,7 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.iridiumTxTimeSpinBox.setFont(font)
+        self.iridiumTxTimeSpinBox.setMinimum(2)
         self.iridiumTxTimeSpinBox.setMaximum(60)
         self.iridiumTxTimeSpinBox.setProperty("value", 5)
         self.iridiumTxTimeSpinBox.setObjectName("iridiumTxTimeSpinBox")
