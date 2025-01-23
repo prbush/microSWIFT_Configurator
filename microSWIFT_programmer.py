@@ -533,6 +533,7 @@ class Ui_MainWindow(object):
 
             typedef struct microSWIFT_configuration
             {
+              uint32_t tracking_number;
               uint32_t samples_per_window;
               uint32_t duty_cycle;
               uint32_t iridium_max_transmit_time;
@@ -580,7 +581,8 @@ class Ui_MainWindow(object):
               } > USERVARS
               
             Thus, in totality, the config struct is the first element in the .uservars section, followed by:
-            VERSION_NUMBER:= typedef struct {uint8_t major_rev; uint8_t minor_rev;} microSWIFT_firmware_version_t;
+            VERSION_NUMBER:= typedef struct {uint8_t major_rev :4; uint8_t minor_rev :4;} microSWIFT_firmware_version_t;
+                !! Note this is a single byte for both fields !!
             COMPILATION_DATE:= char[11] in the format "MM/DD/YYYY"
             COMPILATION_TIME:= char[9] in the format "HH:MM:SS"
             '''
@@ -593,7 +595,7 @@ class Ui_MainWindow(object):
             date += "\x00"  # null terminated
             time += "\x00"  # null terminated
 
-            configStruct = struct.pack(">LLLLLLLLLL??????BB11s9s",
+            configStruct = struct.pack("<LLLLLLLLLL??????B11s9s",
                                        int(self.trackingNumberSpinBox.value()),
                                        int(self.gnssNumSamplesSpinBox.value()),
                                        int(self.dutyCycleSpinBox.value()),
@@ -610,11 +612,12 @@ class Ui_MainWindow(object):
                                        bool(self.tempEnableButton.isChecked()),
                                        bool(self.lightEnableButton.isChecked()),
                                        bool(self.turbidityEnableButton.isChecked()),
-                                       FIRMWARE_MAJOR_VERSION,
-                                       FIRMWARE_MINOR_VERSION,
+                                       int(FIRMWARE_MAJOR_VERSION | (FIRMWARE_MINOR_VERSION << 4)),
                                        bytes(date.encode("utf-8")),
                                        bytes(time.encode("utf-8"))
                                        )
+
+            num_bytes = len(configStruct)
             configFile.write(configStruct)
 
     def fillComboBoxes(self):
