@@ -530,6 +530,7 @@ class Ui_MainWindow(object):
 
         with open(self.configFilePath, "wb") as configFile:
             '''
+            
             Definition of configuration struct from configuration.h in firmware files
 
             typedef struct microSWIFT_configuration
