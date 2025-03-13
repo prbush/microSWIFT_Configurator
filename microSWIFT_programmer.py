@@ -44,7 +44,7 @@ class Worker(QThread):
         command = [
             programmerPath,
             "--connect", "port=SWD",  # Specify the port (e.g., USB, JTAG)
-            "--download", "/Users/philbush/STM32CubeIDE/microSWIFT/microSWIFT_Configurator/firmware/microSWIFT_V2.2.elf",  # Firmware file to write to the device
+            "--download", "firmware/microSWIFT_V2.2.elf",  # Firmware file to write to the device
             "0x08000000",  # download address
             "--verify",  # Verify after programming
         ]
@@ -83,7 +83,7 @@ class Worker(QThread):
             command = [
                 programmerPath,
                 "--connect", "port=SWD",  # Specify the port (e.g., USB, JTAG)
-                "--download", "/Users/philbush/STM32CubeIDE/microSWIFT/microSWIFT_Configurator/firmware/config.bin",  # Firmware file to write to the device
+                "--download", "firmware/config.bin",  # Firmware file to write to the device
                 "0x083FFC00",  # download address
                 "--verify",  # Verify after programming
                 "--start", "0x08000000"  # Start after programming and verification (at address 0x08000000)
@@ -119,7 +119,7 @@ class Worker(QThread):
 class Ui_MainWindow(object):
     device_connected = False
     stlink_port = ""
-    configFilePath = "/Users/philbush/STM32CubeIDE/microSWIFT/microSWIFT_Configurator/firmware/config.bin"
+    configFilePath = "firmware/config.bin"
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -242,8 +242,8 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.lightNumSamplesSpinBox.setFont(font)
         self.lightNumSamplesSpinBox.setMinimum(1)
-        self.lightNumSamplesSpinBox.setMaximum(32768)
-        self.lightNumSamplesSpinBox.setProperty("value", 1024)
+        self.lightNumSamplesSpinBox.setMaximum(1800)
+        self.lightNumSamplesSpinBox.setProperty("value", 512)
         self.lightNumSamplesSpinBox.setObjectName("lightNumSamplesSpinBox")
         self.lightSamplesHorizLayout.addWidget(self.lightNumSamplesSpinBox)
         self.lightVerticalLayout.addLayout(self.lightSamplesHorizLayout)
@@ -381,6 +381,7 @@ class Ui_MainWindow(object):
         self.gnssMaxAcquisitionTimeSpinBox.setFont(font)
         self.gnssMaxAcquisitionTimeSpinBox.setWhatsThis("")
         self.gnssMaxAcquisitionTimeSpinBox.setMaximum(30)
+        self.gnssMaxAcquisitionTimeSpinBox.setMinimum(1)
         self.gnssMaxAcquisitionTimeSpinBox.setProperty("value", 5)
         self.gnssMaxAcquisitionTimeSpinBox.setObjectName("gnssMaxAcquisitionTimeSpinBox")
         self.gnssBufferTimeHorizLayout.addWidget(self.gnssMaxAcquisitionTimeSpinBox)
@@ -474,7 +475,7 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.turbidityNumSamplesSpinBox.setFont(font)
         self.turbidityNumSamplesSpinBox.setMinimum(1)
-        self.turbidityNumSamplesSpinBox.setMaximum(32768)
+        self.turbidityNumSamplesSpinBox.setMaximum(3600)
         self.turbidityNumSamplesSpinBox.setProperty("value", 1024)
         self.turbidityNumSamplesSpinBox.setObjectName("turbidityNumSamplesSpinBox")
         self.turbiditySamplesHorizLayout.addWidget(self.turbidityNumSamplesSpinBox)
@@ -520,7 +521,7 @@ class Ui_MainWindow(object):
         self.trackingNumberLabel.setText(_translate("MainWindow", "microSWIFT Tracking number"))
         self.verifyButton.setText(_translate("MainWindow", "Verify"))
         self.programButton.setText(_translate("MainWindow", "Program"))
-        self.turbidityEnableButton.setText(_translate("MainWindow", "Enable Light Sensor"))
+        self.turbidityEnableButton.setText(_translate("MainWindow", "Enable Turbidity Sensor"))
         self.turbidityMatchGNSSCheckbox.setText(_translate("MainWindow", "Match GNSS period"))
         self.turbidityNumSamplesLabel.setText(_translate("MainWindow", "Number of samples @ 1Hz"))
 
@@ -529,6 +530,7 @@ class Ui_MainWindow(object):
 
         with open(self.configFilePath, "wb") as configFile:
             '''
+            
             Definition of configuration struct from configuration.h in firmware files
 
             typedef struct microSWIFT_configuration
@@ -714,8 +716,8 @@ class Ui_MainWindow(object):
         get_int_from_str = lambda s: int(re.search(r'\d+', s).group()) if re.search(r'\d+', s) else None
         if self.lightMatchGNSSCheckbox.isChecked():
             self.lightNumSamplesSpinBox.setDisabled(True)
-            self.lightNumSamplesSpinBox.setValue(int(self.gnssNumSamplesSpinBox.value() /
-                                                     get_int_from_str(self.gnssSampleRateComboBox.currentText())))
+            self.lightNumSamplesSpinBox.setValue(int((self.gnssNumSamplesSpinBox.value() /
+                                                     get_int_from_str(self.gnssSampleRateComboBox.currentText()) / 2)))
 
         self.resetVerifyButton()
 
@@ -803,15 +805,23 @@ class Ui_MainWindow(object):
             verify_strings.append("CT sampling window greater than allotted time of 2 mins.\n")
             settings_invalid = True
 
-        if light_enabled and ((duty_cycle - ((light_num_samples / 60) + 1)
-                               - iridium_tx_time) < 0):
-            verify_strings.append("Duty cycle not long enough to complete Light sample window.\n")
-            settings_invalid = True
+        if light_enabled:
+            if ((duty_cycle - ((light_num_samples / 30) + 1) - iridium_tx_time) < 0):
+                verify_strings.append("Duty cycle not long enough to complete Light sample window.\n")
+                settings_invalid = True
+            if (int((self.gnssNumSamplesSpinBox.value() / get_int_from_str(self.gnssSampleRateComboBox.currentText())
+                     / 2)) > 1800):
+                verify_strings.append("Max number of light samples is 1800.\n")
+                settings_invalid = True
 
-        if turbidity_enabled and ((duty_cycle - ((turbidity_num_samples / 60) + 1)
-                                   - iridium_tx_time) < 0):
-            verify_strings.append("Duty cycle not long enough to complete Turbidity sample window.\n")
-            settings_invalid = True
+        if turbidity_enabled:
+            if ((duty_cycle - ((turbidity_num_samples / 60) + 1) - iridium_tx_time) < 0):
+                verify_strings.append("Duty cycle not long enough to complete Turbidity sample window.\n")
+                settings_invalid = True
+            if (int(self.gnssNumSamplesSpinBox.value() / get_int_from_str(self.gnssSampleRateComboBox.currentText()))
+                    > 3600):
+                verify_strings.append("Max number of turbidity samples is 3600.\n")
+                settings_invalid = True
 
         if settings_invalid:
             self.programButton.setDisabled(True)
