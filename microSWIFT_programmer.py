@@ -510,7 +510,7 @@ class Ui_MainWindow(object):
         self.tempNumSamplesLabel.setText(_translate("MainWindow", "Number of samples to average"))
         self.lightEnableButton.setText(_translate("MainWindow", "Enable Light"))
         self.lightMatchGNSSCheckbox.setText(_translate("MainWindow", "Match GNSS period"))
-        self.lightNumSamplesLabel.setText(_translate("MainWindow", "Number of samples @ 1Hz"))
+        self.lightNumSamplesLabel.setText(_translate("MainWindow", "Number of samples @ 0.5Hz"))
         self.iridiumTxTimeLabel.setText(_translate("MainWindow", "Iridium transmit time in mins"))
         self.iridiumTypeLabel.setText(_translate("MainWindow", "Iridium Modem Type"))
         self.gnssNumSamplesLabel.setText(_translate("MainWindow", "Number of GNSS samples"))
