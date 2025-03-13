@@ -237,7 +237,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Number of samples @ 1Hz</string>
+           <string>Number of samples @ 0.5Hz</string>
           </property>
          </widget>
         </item>
@@ -252,10 +252,10 @@
            </font>
           </property>
           <property name="maximum">
-           <number>32768</number>
+           <number>1800</number>
           </property>
           <property name="value">
-           <number>1024</number>
+           <number>512</number>
           </property>
          </widget>
         </item>
@@ -285,7 +285,7 @@
        <x>10</x>
        <y>10</y>
        <width>281</width>
-       <height>61</height>
+       <height>67</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="iridiumVertLayout">
@@ -523,10 +523,10 @@
            <string extracomment="Buffer time allowed for GNSS sample window. For example, if Number of GNSS Samples is 4096 and GNSS Sample rate is 4Hz, the window will take ceil((4096/4)/60) = 18 mins. This buffer time is added to that, allowing 20 mins to collect all GNSS samples."/>
           </property>
           <property name="maximum">
-           <number>5</number>
+           <number>10</number>
           </property>
           <property name="value">
-           <number>2</number>
+           <number>5</number>
           </property>
          </widget>
         </item>
@@ -658,7 +658,7 @@
       <rect>
        <x>10</x>
        <y>11</y>
-       <width>286</width>
+       <width>307</width>
        <height>61</height>
       </rect>
      </property>
@@ -673,7 +673,7 @@
            </font>
           </property>
           <property name="text">
-           <string>Enable Light Sensor</string>
+           <string>Enable Turbidity Sensor</string>
           </property>
          </widget>
         </item>
@@ -722,7 +722,7 @@
            </font>
           </property>
           <property name="maximum">
-           <number>32768</number>
+           <number>3600</number>
           </property>
           <property name="value">
            <number>1024</number>

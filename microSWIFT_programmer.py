@@ -44,7 +44,7 @@ class Worker(QThread):
         command = [
             programmerPath,
             "--connect", "port=SWD",  # Specify the port (e.g., USB, JTAG)
-            "--download", "firmware/microSWIFT_V2.2.elf",  # Firmware file to write to the device
+            "--download", "/Users/philbush/STM32CubeIDE/microSWIFT/microSWIFT_Configurator/firmware/microSWIFT_V2.2.elf",  # Firmware file to write to the device
             "0x08000000",  # download address
             "--verify",  # Verify after programming
         ]
@@ -83,7 +83,7 @@ class Worker(QThread):
             command = [
                 programmerPath,
                 "--connect", "port=SWD",  # Specify the port (e.g., USB, JTAG)
-                "--download", "firmware/config.bin",  # Firmware file to write to the device
+                "--download", "/Users/philbush/STM32CubeIDE/microSWIFT/microSWIFT_Configurator/firmware/config.bin",  # Firmware file to write to the device
                 "0x083FFC00",  # download address
                 "--verify",  # Verify after programming
                 "--start", "0x08000000"  # Start after programming and verification (at address 0x08000000)
@@ -119,7 +119,7 @@ class Worker(QThread):
 class Ui_MainWindow(object):
     device_connected = False
     stlink_port = ""
-    configFilePath = "firmware/config.bin"
+    configFilePath = "/Users/philbush/STM32CubeIDE/microSWIFT/microSWIFT_Configurator/firmware/config.bin"
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
