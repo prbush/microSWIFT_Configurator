@@ -504,11 +504,11 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "microSWIFT Configurator"))
-        self.ctEnableButton.setText(_translate("MainWindow", "Enable CT Sensor"))
+        self.ctEnableButton.setText(_translate("MainWindow", "Enable CT"))
         self.ctNumSamplesLabel.setText(_translate("MainWindow", "Number of samples to average"))
-        self.tempEnableButton.setText(_translate("MainWindow", "Enable Temperature Sensor"))
+        self.tempEnableButton.setText(_translate("MainWindow", "Enable Temperature"))
         self.tempNumSamplesLabel.setText(_translate("MainWindow", "Number of samples to average"))
-        self.lightEnableButton.setText(_translate("MainWindow", "Enable Light Sensor"))
+        self.lightEnableButton.setText(_translate("MainWindow", "Enable Light"))
         self.lightMatchGNSSCheckbox.setText(_translate("MainWindow", "Match GNSS period"))
         self.lightNumSamplesLabel.setText(_translate("MainWindow", "Number of samples @ 1Hz"))
         self.iridiumTxTimeLabel.setText(_translate("MainWindow", "Iridium transmit time in mins"))
@@ -521,7 +521,7 @@ class Ui_MainWindow(object):
         self.trackingNumberLabel.setText(_translate("MainWindow", "microSWIFT Tracking number"))
         self.verifyButton.setText(_translate("MainWindow", "Verify"))
         self.programButton.setText(_translate("MainWindow", "Program"))
-        self.turbidityEnableButton.setText(_translate("MainWindow", "Enable Turbidity Sensor"))
+        self.turbidityEnableButton.setText(_translate("MainWindow", "Enable Turbidity"))
         self.turbidityMatchGNSSCheckbox.setText(_translate("MainWindow", "Match GNSS period"))
         self.turbidityNumSamplesLabel.setText(_translate("MainWindow", "Number of samples @ 1Hz"))
 
