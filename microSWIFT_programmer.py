@@ -743,9 +743,6 @@ class Ui_MainWindow(object):
         self.resetVerifyButton()
 
     def find_usb_port(self):
-        # Vendor ID and Product ID for STLink V3
-        VENDOR_ID = 0x0483  # STMicroelectronics
-        PRODUCT_ID = 0x374E  # STLink V3
 
         # List all available serial ports
         ports = serial.tools.list_ports.comports()
@@ -753,8 +750,8 @@ class Ui_MainWindow(object):
         stlink_ports = []
 
         for port in ports:
-            # Check if the port matches the STLink V3 vendor and product IDs
-            if port.vid == VENDOR_ID and port.pid == PRODUCT_ID:
+            # Check if the port is an STLINK
+            if "STLINK" in port.description:
                 stlink_ports.append(port.device)
                 break
 
