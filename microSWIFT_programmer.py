@@ -80,13 +80,21 @@ class Worker(QThread):
             firmwareBurnSuccessful = False
 
         if firmwareBurnSuccessful:
+            # command = [
+            #     programmerPath,
+            #     "--connect", "port=SWD",  # Specify the port (e.g., USB, JTAG)
+            #     "--download", "firmware/config.bin",  # Firmware file to write to the device
+            #     "0x083FFC00",  # download address
+            #     "--verify",  # Verify after programming
+            #     "--start", "0x08000000"  # Start after programming and verification (at address 0x08000000)
+            # ]
+
             command = [
                 programmerPath,
                 "--connect", "port=SWD",  # Specify the port (e.g., USB, JTAG)
                 "--download", "firmware/config.bin",  # Firmware file to write to the device
                 "0x083FFC00",  # download address
-                "--verify",  # Verify after programming
-                "--start", "0x08000000"  # Start after programming and verification (at address 0x08000000)
+                "--verify"
             ]
 
             # Burn the configuration bytes
@@ -120,8 +128,11 @@ class Ui_MainWindow(object):
     device_connected = False
     stlink_port = ""
     configFilePath = "firmware/config.bin"
+    mainwindow = None
 
     def setupUi(self, MainWindow):
+        self.mainwindow = MainWindow
+
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(640, 800)
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
@@ -179,6 +190,9 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.tempEnableButton.setFont(font)
         self.tempEnableButton.setObjectName("tempEnableButton")
+
+        self.tempEnableButton.setChecked(True)
+
         self.tempVertLayout.addWidget(self.tempEnableButton)
         self.tempHorizLayout = QtWidgets.QHBoxLayout()
         self.tempHorizLayout.setObjectName("tempHorizLayout")
@@ -218,6 +232,9 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.lightEnableButton.setFont(font)
         self.lightEnableButton.setObjectName("lightEnableButton")
+
+        self.lightEnableButton.setChecked(True)
+
         self.lightEnableHorizLayout.addWidget(self.lightEnableButton)
         self.lightMatchGNSSCheckbox = QtWidgets.QCheckBox(parent=self.layoutWidget1)
         self.lightMatchGNSSCheckbox.setEnabled(False)
@@ -225,6 +242,9 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.lightMatchGNSSCheckbox.setFont(font)
         self.lightMatchGNSSCheckbox.setObjectName("lightMatchGNSSCheckbox")
+
+        self.lightMatchGNSSCheckbox.setChecked(True)
+
         self.lightEnableHorizLayout.addWidget(self.lightMatchGNSSCheckbox)
         self.lightVerticalLayout.addLayout(self.lightEnableHorizLayout)
         self.lightSamplesHorizLayout = QtWidgets.QHBoxLayout()
@@ -243,7 +263,10 @@ class Ui_MainWindow(object):
         self.lightNumSamplesSpinBox.setFont(font)
         self.lightNumSamplesSpinBox.setMinimum(1)
         self.lightNumSamplesSpinBox.setMaximum(1800)
-        self.lightNumSamplesSpinBox.setProperty("value", 512)
+        # self.lightNumSamplesSpinBox.setProperty("value", 512)
+
+        self.lightNumSamplesSpinBox.setProperty("value", 128)
+
         self.lightNumSamplesSpinBox.setObjectName("lightNumSamplesSpinBox")
         self.lightSamplesHorizLayout.addWidget(self.lightNumSamplesSpinBox)
         self.lightVerticalLayout.addLayout(self.lightSamplesHorizLayout)
@@ -270,9 +293,12 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.iridiumTxTimeSpinBox.setFont(font)
-        self.iridiumTxTimeSpinBox.setMinimum(2)
+        self.iridiumTxTimeSpinBox.setMinimum(1)
         self.iridiumTxTimeSpinBox.setMaximum(60)
-        self.iridiumTxTimeSpinBox.setProperty("value", 5)
+        # self.iridiumTxTimeSpinBox.setProperty("value", 5)
+
+        self.iridiumTxTimeSpinBox.setProperty("value", 2)
+
         self.iridiumTxTimeSpinBox.setObjectName("iridiumTxTimeSpinBox")
         self.iridiumTxTimeHorizLayout.addWidget(self.iridiumTxTimeSpinBox)
         self.iridiumVertLayout.addLayout(self.iridiumTxTimeHorizLayout)
@@ -316,7 +342,10 @@ class Ui_MainWindow(object):
         self.gnssNumSamplesSpinBox.setFont(font)
         self.gnssNumSamplesSpinBox.setMinimum(1024)
         self.gnssNumSamplesSpinBox.setMaximum(32768)
-        self.gnssNumSamplesSpinBox.setProperty("value", 4096)
+        # self.gnssNumSamplesSpinBox.setProperty("value", 4096)
+
+        self.gnssNumSamplesSpinBox.setProperty("value", 1024)
+
         self.gnssNumSamplesSpinBox.setObjectName("gnssNumSamplesSpinBox")
         self.gnssSamplesHorizLayout.addWidget(self.gnssNumSamplesSpinBox)
         self.gnssVertLayout.addLayout(self.gnssSamplesHorizLayout)
@@ -362,7 +391,10 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.dutyCycleSpinBox.setFont(font)
         self.dutyCycleSpinBox.setMaximum(1440)
-        self.dutyCycleSpinBox.setProperty("value", 30)
+        # self.dutyCycleSpinBox.setProperty("value", 30)
+
+        self.dutyCycleSpinBox.setProperty("value", 15)
+
         self.dutyCycleSpinBox.setObjectName("dutyCycleSpinBox")
         self.dutyCycleHorizLayout.addWidget(self.dutyCycleSpinBox)
         self.timingVertLayout.addLayout(self.dutyCycleHorizLayout)
@@ -382,7 +414,10 @@ class Ui_MainWindow(object):
         self.gnssMaxAcquisitionTimeSpinBox.setWhatsThis("")
         self.gnssMaxAcquisitionTimeSpinBox.setMaximum(30)
         self.gnssMaxAcquisitionTimeSpinBox.setMinimum(1)
-        self.gnssMaxAcquisitionTimeSpinBox.setProperty("value", 5)
+        # self.gnssMaxAcquisitionTimeSpinBox.setProperty("value", 5)
+
+        self.gnssMaxAcquisitionTimeSpinBox.setProperty("value", 2)
+
         self.gnssMaxAcquisitionTimeSpinBox.setObjectName("gnssMaxAcquisitionTimeSpinBox")
         self.gnssBufferTimeHorizLayout.addWidget(self.gnssMaxAcquisitionTimeSpinBox)
         self.timingVertLayout.addLayout(self.gnssBufferTimeHorizLayout)
@@ -927,6 +962,7 @@ class Ui_MainWindow(object):
         self.programButton.setDisabled(True)
 
     def reenableGUI(self):
+
         self.ctEnableButton.setEnabled(True)
         if self.ctEnableButton.isChecked():
             self.ctNumSamplesSpinBox.setEnabled(True)
