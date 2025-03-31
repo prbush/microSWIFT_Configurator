@@ -751,7 +751,7 @@ class Ui_MainWindow(object):
 
         for port in ports:
             # Check if the port is an STLINK
-            if "STLINK" in port.description:
+            if "STLINK" in port.description.upper():
                 stlink_ports.append(port.device)
                 break
 
@@ -866,7 +866,7 @@ class Ui_MainWindow(object):
         self.statusTextEdit.clear()
 
         char_format = QTextCharFormat()
-        char_format.setForeground(QColor('white'))
+        char_format.setForeground(QColor('black'))
 
         self.statusTextEdit.setCurrentCharFormat(char_format)
 
@@ -874,7 +874,7 @@ class Ui_MainWindow(object):
 
     def appendText(self, string):
         char_format = QTextCharFormat()
-        char_format.setForeground(QColor('white'))
+        char_format.setForeground(QColor('black'))
 
         self.statusTextEdit.setCurrentCharFormat(char_format)
 
