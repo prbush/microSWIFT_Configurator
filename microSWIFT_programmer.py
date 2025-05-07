@@ -16,8 +16,6 @@ from PyQt6.QtCore import pyqtSignal, QThread
 
 from datetime import datetime
 
-from git import Repo
-
 FIRMWARE_MAJOR_VERSION = 2
 FIRMWARE_MINOR_VERSION = 2
 
