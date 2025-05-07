@@ -9,7 +9,7 @@ import re
 import subprocess
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtGui import QTextCharFormat, QColor, QGuiApplication
+from PyQt6.QtGui import QTextCharFormat, QColor, QGuiApplication, QFont, QFontDatabase
 from PyQt6.QtWidgets import QGraphicsScene, QGraphicsPixmapItem
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import pyqtSignal, QThread, Qt
@@ -510,6 +510,52 @@ class Ui_MainWindow(object):
         self.find_usb_port()
         self.displayPicture()
 
+        self.statusTextEdit.setFont(QFont("Courier New"))
+
+        (self.writeText
+        ("           _        "
+         "       ______       "
+         " _____ _____ _____  "
+         "   \r\n"
+         " _ __ ___ (_) ___ _ "
+         "__ ___/ ___\\ \\    "
+         "  / /_ _|  ___|_   _"
+         "|    \r\n"
+         "| \'_ ` _ \\| |/ __|"
+         " \'__/ _ \\___ \\\\ "
+         "\\ /\\ / / | || |_  "
+         "  | |      \r\n"
+         "| | | | | | | (__| |"
+         " | (_) |__) |\\ V  V"
+         " /  | ||  _|   | |  "
+         "    \r\n"
+         "|_|_|_| |_|_|\\___|_"
+         "|  \\___/____/  \\_/"
+         "\\_/  |___|_|     |_"
+         "|      \r\n"
+         "|  _ \\ _ __ ___   _"
+         "_ _ _ __ __ _ _ __ _"
+         "__  _ __ ___   ___ _"
+         " __ \r\n"
+         "| |_) | \'__/ _ \\ /"
+         " _` | \'__/ _` | \'_"
+         " ` _ \\| \'_ ` _ \\ "
+         "/ _ \\ \'__|\r\n"
+         "|  __/| | | (_) | (_"
+         "| | | | (_| | | | | "
+         "| | | | | | |  __/ |"
+         "   \r\n"
+         "|_|   |_|  \\___/ \\"
+         "__, |_|  \\__,_|_| |"
+         "_| |_|_| |_| |_|\\__"
+         "_|_|   \r\n"
+         "                 |__"
+         "_/                  "
+         "                    "
+         "   "
+         "\r\r\nDon't forget to update this tool!!! Insert repo link here."))
+
+
     def assembleBinaryConfigFile(self):
         get_int_from_str = lambda s: int(re.search(r'\d+', s).group()) if re.search(r'\d+', s) else None
 
@@ -568,7 +614,7 @@ class Ui_MainWindow(object):
                                        int(self.gnssMaxAcquisitionTimeSpinBox.value()),
                                        get_int_from_str(self.gnssSampleRateComboBox.currentText()),
                                        int(self.lightNumSamplesSpinBox.value()),
-                                       # add light gain here
+                                       int(self.lightGainComboBox.currentIndex()),
                                        int(self.turbidityNumSamplesSpinBox.value()),
                                        bool(self.iridiumTypeComboBox.currentText() == "V3F"),
                                        bool(self.gnssHighPerformanceModeCheckBox.isChecked()),
@@ -631,6 +677,7 @@ class Ui_MainWindow(object):
         self.programButton.clicked.connect(self.programDevice)
 
         self.lightNumSamplesSpinBox.valueChanged.connect(self.resetVerifyButton)
+        self.lightGainComboBox.currentIndexChanged.connect(self.resetVerifyButton)
         self.turbidityNumSamplesSpinBox.valueChanged.connect(self.resetVerifyButton)
         self.iridiumTxTimeSpinBox.valueChanged.connect(self.resetVerifyButton)
         self.gnssNumSamplesSpinBox.valueChanged.connect(self.resetVerifyButton)
@@ -929,14 +976,6 @@ class Ui_MainWindow(object):
 
 
 if __name__ == "__main__":
-    repo_owner = "SASlabgroup"
-    repo_name = "microSWIFT-V2-Binaries"
-    remote_file_path = "V2.2/microSWIFT_V2.2.elf"
-    local_file_path = "firmware/microSWIFT_V2.2.elf"
-
-    # You can optionally provide your GitHub token here to avoid rate limiting
-    github_auth_token = None  # Replace with your token if you have one
-
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
