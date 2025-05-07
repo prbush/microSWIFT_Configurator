@@ -9,10 +9,10 @@ import re
 import subprocess
 
 from PyQt6 import QtCore, QtGui, QtWidgets
-from PyQt6.QtGui import QTextCharFormat, QColor
+from PyQt6.QtGui import QTextCharFormat, QColor, QGuiApplication
 from PyQt6.QtWidgets import QGraphicsScene, QGraphicsPixmapItem
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtCore import pyqtSignal, QThread
+from PyQt6.QtCore import pyqtSignal, QThread, Qt
 
 from datetime import datetime
 
@@ -145,6 +145,7 @@ class Ui_MainWindow(object):
     device_connected = False
     stlink_port = ""
     configFilePath = "firmware/config.bin"
+    colorScheme = []
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -152,7 +153,7 @@ class Ui_MainWindow(object):
         self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.ctFrame = QtWidgets.QFrame(parent=self.centralwidget)
-        self.ctFrame.setGeometry(QtCore.QRect(10, 10, 301, 80))
+        self.ctFrame.setGeometry(QtCore.QRect(10, 10, 301, 91))
         self.ctFrame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.ctFrame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.ctFrame.setObjectName("ctFrame")
@@ -167,71 +168,22 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.ctEnableButton.setFont(font)
         self.ctEnableButton.setObjectName("ctEnableButton")
+        self.ctEnableButton.setAutoExclusive(False)
         self.ctVertLayout.addWidget(self.ctEnableButton)
-        self.ctHorizLayout = QtWidgets.QHBoxLayout()
-        self.ctHorizLayout.setObjectName("ctHorizLayout")
-        self.ctNumSamplesLabel = QtWidgets.QLabel(parent=self.layoutWidget)
-        self.ctNumSamplesLabel.setEnabled(False)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.ctNumSamplesLabel.setFont(font)
-        self.ctNumSamplesLabel.setObjectName("ctNumSamplesLabel")
-        self.ctHorizLayout.addWidget(self.ctNumSamplesLabel)
-        self.ctNumSamplesSpinBox = QtWidgets.QSpinBox(parent=self.layoutWidget)
-        self.ctNumSamplesSpinBox.setEnabled(False)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.ctNumSamplesSpinBox.setFont(font)
-        self.ctNumSamplesSpinBox.setMinimum(1)
-        self.ctNumSamplesSpinBox.setMaximum(1000)
-        self.ctNumSamplesSpinBox.setProperty("value", 10)
-        self.ctNumSamplesSpinBox.setObjectName("ctNumSamplesSpinBox")
-        self.ctHorizLayout.addWidget(self.ctNumSamplesSpinBox)
-        self.ctVertLayout.addLayout(self.ctHorizLayout)
-        self.tempFrame = QtWidgets.QFrame(parent=self.centralwidget)
-        self.tempFrame.setGeometry(QtCore.QRect(10, 100, 301, 80))
-        self.tempFrame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
-        self.tempFrame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
-        self.tempFrame.setObjectName("tempFrame")
-        self.layoutWidget_6 = QtWidgets.QWidget(parent=self.tempFrame)
-        self.layoutWidget_6.setGeometry(QtCore.QRect(10, 10, 281, 61))
-        self.layoutWidget_6.setObjectName("layoutWidget_6")
-        self.tempVertLayout = QtWidgets.QVBoxLayout(self.layoutWidget_6)
-        self.tempVertLayout.setContentsMargins(0, 0, 0, 0)
-        self.tempVertLayout.setObjectName("tempVertLayout")
-        self.tempEnableButton = QtWidgets.QRadioButton(parent=self.layoutWidget_6)
+        self.tempEnableButton = QtWidgets.QRadioButton(parent=self.layoutWidget)
         font = QtGui.QFont()
         font.setPointSize(12)
         self.tempEnableButton.setFont(font)
         self.tempEnableButton.setObjectName("tempEnableButton")
-        self.tempVertLayout.addWidget(self.tempEnableButton)
-        self.tempHorizLayout = QtWidgets.QHBoxLayout()
-        self.tempHorizLayout.setObjectName("tempHorizLayout")
-        self.tempNumSamplesLabel = QtWidgets.QLabel(parent=self.layoutWidget_6)
-        self.tempNumSamplesLabel.setEnabled(False)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.tempNumSamplesLabel.setFont(font)
-        self.tempNumSamplesLabel.setObjectName("tempNumSamplesLabel")
-        self.tempHorizLayout.addWidget(self.tempNumSamplesLabel)
-        self.tempNumSamplesSpinBox = QtWidgets.QSpinBox(parent=self.layoutWidget_6)
-        self.tempNumSamplesSpinBox.setEnabled(False)
-        font = QtGui.QFont()
-        font.setPointSize(12)
-        self.tempNumSamplesSpinBox.setFont(font)
-        self.tempNumSamplesSpinBox.setMinimum(1)
-        self.tempNumSamplesSpinBox.setMaximum(1000)
-        self.tempNumSamplesSpinBox.setProperty("value", 10)
-        self.tempNumSamplesSpinBox.setObjectName("tempNumSamplesSpinBox")
-        self.tempHorizLayout.addWidget(self.tempNumSamplesSpinBox)
-        self.tempVertLayout.addLayout(self.tempHorizLayout)
+        self.tempEnableButton.setAutoExclusive(False)
+        self.ctVertLayout.addWidget(self.tempEnableButton)
         self.lightFrame = QtWidgets.QFrame(parent=self.centralwidget)
-        self.lightFrame.setGeometry(QtCore.QRect(10, 190, 301, 81))
+        self.lightFrame.setGeometry(QtCore.QRect(10, 110, 301, 131))
         self.lightFrame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.lightFrame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.lightFrame.setObjectName("lightFrame")
         self.layoutWidget1 = QtWidgets.QWidget(parent=self.lightFrame)
-        self.layoutWidget1.setGeometry(QtCore.QRect(10, 11, 286, 61))
+        self.layoutWidget1.setGeometry(QtCore.QRect(10, 11, 286, 115))
         self.layoutWidget1.setObjectName("layoutWidget1")
         self.lightVerticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget1)
         self.lightVerticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -252,6 +204,17 @@ class Ui_MainWindow(object):
         self.lightMatchGNSSCheckbox.setObjectName("lightMatchGNSSCheckbox")
         self.lightEnableHorizLayout.addWidget(self.lightMatchGNSSCheckbox)
         self.lightVerticalLayout.addLayout(self.lightEnableHorizLayout)
+        self.horizontalLayout = QtWidgets.QHBoxLayout()
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.lightGainLabel = QtWidgets.QLabel(parent=self.layoutWidget1)
+        self.lightGainLabel.setEnabled(False)
+        self.lightGainLabel.setObjectName("lightGainLabel")
+        self.horizontalLayout.addWidget(self.lightGainLabel)
+        self.lightGainComboBox = QtWidgets.QComboBox(parent=self.layoutWidget1)
+        self.lightGainComboBox.setEnabled(False)
+        self.lightGainComboBox.setObjectName("lightGainComboBox")
+        self.horizontalLayout.addWidget(self.lightGainComboBox)
+        self.lightVerticalLayout.addLayout(self.horizontalLayout)
         self.lightSamplesHorizLayout = QtWidgets.QHBoxLayout()
         self.lightSamplesHorizLayout.setObjectName("lightSamplesHorizLayout")
         self.lightNumSamplesLabel = QtWidgets.QLabel(parent=self.layoutWidget1)
@@ -266,7 +229,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.lightNumSamplesSpinBox.setFont(font)
-        self.lightNumSamplesSpinBox.setMinimum(1)
         self.lightNumSamplesSpinBox.setMaximum(1800)
         self.lightNumSamplesSpinBox.setProperty("value", 512)
         self.lightNumSamplesSpinBox.setObjectName("lightNumSamplesSpinBox")
@@ -278,7 +240,7 @@ class Ui_MainWindow(object):
         self.iridiumFrame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.iridiumFrame.setObjectName("iridiumFrame")
         self.layoutWidget2 = QtWidgets.QWidget(parent=self.iridiumFrame)
-        self.layoutWidget2.setGeometry(QtCore.QRect(10, 10, 281, 61))
+        self.layoutWidget2.setGeometry(QtCore.QRect(10, 10, 281, 67))
         self.layoutWidget2.setObjectName("layoutWidget2")
         self.iridiumVertLayout = QtWidgets.QVBoxLayout(self.layoutWidget2)
         self.iridiumVertLayout.setContentsMargins(0, 0, 0, 0)
@@ -295,7 +257,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.iridiumTxTimeSpinBox.setFont(font)
-        self.iridiumTxTimeSpinBox.setMinimum(2)
         self.iridiumTxTimeSpinBox.setMaximum(60)
         self.iridiumTxTimeSpinBox.setProperty("value", 5)
         self.iridiumTxTimeSpinBox.setObjectName("iridiumTxTimeSpinBox")
@@ -339,7 +300,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.gnssNumSamplesSpinBox.setFont(font)
-        self.gnssNumSamplesSpinBox.setMinimum(1024)
         self.gnssNumSamplesSpinBox.setMaximum(32768)
         self.gnssNumSamplesSpinBox.setProperty("value", 4096)
         self.gnssNumSamplesSpinBox.setObjectName("gnssNumSamplesSpinBox")
@@ -405,8 +365,7 @@ class Ui_MainWindow(object):
         font.setPointSize(12)
         self.gnssMaxAcquisitionTimeSpinBox.setFont(font)
         self.gnssMaxAcquisitionTimeSpinBox.setWhatsThis("")
-        self.gnssMaxAcquisitionTimeSpinBox.setMaximum(30)
-        self.gnssMaxAcquisitionTimeSpinBox.setMinimum(1)
+        self.gnssMaxAcquisitionTimeSpinBox.setMaximum(10)
         self.gnssMaxAcquisitionTimeSpinBox.setProperty("value", 5)
         self.gnssMaxAcquisitionTimeSpinBox.setObjectName("gnssMaxAcquisitionTimeSpinBox")
         self.gnssBufferTimeHorizLayout.addWidget(self.gnssMaxAcquisitionTimeSpinBox)
@@ -459,12 +418,12 @@ class Ui_MainWindow(object):
         self.programButton.setObjectName("programButton")
         self.statusAndProgVertLayout.addWidget(self.programButton)
         self.turbidityFrame = QtWidgets.QFrame(parent=self.centralwidget)
-        self.turbidityFrame.setGeometry(QtCore.QRect(10, 280, 301, 81))
+        self.turbidityFrame.setGeometry(QtCore.QRect(10, 250, 301, 111))
         self.turbidityFrame.setFrameShape(QtWidgets.QFrame.Shape.StyledPanel)
         self.turbidityFrame.setFrameShadow(QtWidgets.QFrame.Shadow.Raised)
         self.turbidityFrame.setObjectName("turbidityFrame")
         self.layoutWidget_2 = QtWidgets.QWidget(parent=self.turbidityFrame)
-        self.layoutWidget_2.setGeometry(QtCore.QRect(10, 11, 286, 61))
+        self.layoutWidget_2.setGeometry(QtCore.QRect(10, 11, 307, 94))
         self.layoutWidget_2.setObjectName("layoutWidget_2")
         self.turbidityVerticalLayout = QtWidgets.QVBoxLayout(self.layoutWidget_2)
         self.turbidityVerticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -499,7 +458,6 @@ class Ui_MainWindow(object):
         font = QtGui.QFont()
         font.setPointSize(12)
         self.turbidityNumSamplesSpinBox.setFont(font)
-        self.turbidityNumSamplesSpinBox.setMinimum(1)
         self.turbidityNumSamplesSpinBox.setMaximum(3600)
         self.turbidityNumSamplesSpinBox.setProperty("value", 1024)
         self.turbidityNumSamplesSpinBox.setObjectName("turbidityNumSamplesSpinBox")
@@ -508,7 +466,38 @@ class Ui_MainWindow(object):
         self.statusTextEdit = QtWidgets.QTextEdit(parent=self.centralwidget)
         self.statusTextEdit.setGeometry(QtCore.QRect(10, 580, 621, 211))
         self.statusTextEdit.setObjectName("statusTextEdit")
+        MainWindow.setCentralWidget(self.centralwidget)
 
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        self.finishSetup()
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "microSWIFT Configurator"))
+        self.ctEnableButton.setText(_translate("MainWindow", "Enable CT"))
+        self.tempEnableButton.setText(_translate("MainWindow", "Enable Temperature"))
+        self.lightEnableButton.setText(_translate("MainWindow", "Enable Light"))
+        self.lightMatchGNSSCheckbox.setText(_translate("MainWindow", "Match GNSS period"))
+        self.lightGainLabel.setText(_translate("MainWindow", "Gain"))
+        self.lightNumSamplesLabel.setText(_translate("MainWindow", "Number of samples @ 0.5Hz"))
+        self.iridiumTxTimeLabel.setText(_translate("MainWindow", "Iridium transmit time in mins"))
+        self.iridiumTypeLabel.setText(_translate("MainWindow", "Iridium Modem Type"))
+        self.gnssNumSamplesLabel.setText(_translate("MainWindow", "Number of GNSS samples"))
+        self.gnssHighPerformanceModeCheckBox.setText(_translate("MainWindow", "Enable GNSS high performance mode"))
+        self.gnssSampleRateLabel.setText(_translate("MainWindow", "GNSS Sampling Rate"))
+        self.dutyCycleLabel.setText(_translate("MainWindow", "Total Duty Cycle (mins)"))
+        self.gnssMaxAcqusitionTimeLabel.setText(_translate("MainWindow", "GNSS max time to fix (mins)"))
+        self.trackingNumberLabel.setText(_translate("MainWindow", "microSWIFT Tracking number"))
+        self.devicePortLabel.setText(_translate("MainWindow", "No Device Connected"))
+        self.verifyButton.setText(_translate("MainWindow", "Verify"))
+        self.programButton.setText(_translate("MainWindow", "Program"))
+        self.turbidityEnableButton.setText(_translate("MainWindow", "Enable Turbidity"))
+        self.turbidityMatchGNSSCheckbox.setText(_translate("MainWindow", "Match GNSS period"))
+        self.turbidityNumSamplesLabel.setText(_translate("MainWindow", "Number of samples @ 1Hz"))
+
+    def finishSetup(self):
         # Added functionality
         self.worker = Worker()
         self.thread = QThread()
@@ -521,35 +510,6 @@ class Ui_MainWindow(object):
         self.find_usb_port()
         self.displayPicture()
 
-        MainWindow.setCentralWidget(self.centralwidget)
-
-        self.retranslateUi(MainWindow)
-        QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
-    def retranslateUi(self, MainWindow):
-        _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "microSWIFT Configurator"))
-        self.ctEnableButton.setText(_translate("MainWindow", "Enable CT"))
-        self.ctNumSamplesLabel.setText(_translate("MainWindow", "Number of samples to average"))
-        self.tempEnableButton.setText(_translate("MainWindow", "Enable Temperature"))
-        self.tempNumSamplesLabel.setText(_translate("MainWindow", "Number of samples to average"))
-        self.lightEnableButton.setText(_translate("MainWindow", "Enable Light"))
-        self.lightMatchGNSSCheckbox.setText(_translate("MainWindow", "Match GNSS period"))
-        self.lightNumSamplesLabel.setText(_translate("MainWindow", "Number of samples @ 1Hz"))
-        self.iridiumTxTimeLabel.setText(_translate("MainWindow", "Iridium transmit time in mins"))
-        self.iridiumTypeLabel.setText(_translate("MainWindow", "Iridium Modem Type"))
-        self.gnssNumSamplesLabel.setText(_translate("MainWindow", "Number of GNSS samples"))
-        self.gnssHighPerformanceModeCheckBox.setText(_translate("MainWindow", "Enable GNSS high performance mode"))
-        self.gnssSampleRateLabel.setText(_translate("MainWindow", "GNSS Sampling Rate"))
-        self.dutyCycleLabel.setText(_translate("MainWindow", "Total Duty Cycle (mins)"))
-        self.gnssMaxAcqusitionTimeLabel.setText(_translate("MainWindow", "GNSS max time to fix (mins)"))
-        self.trackingNumberLabel.setText(_translate("MainWindow", "microSWIFT Tracking number"))
-        self.verifyButton.setText(_translate("MainWindow", "Verify"))
-        self.programButton.setText(_translate("MainWindow", "Program"))
-        self.turbidityEnableButton.setText(_translate("MainWindow", "Enable Turbidity"))
-        self.turbidityMatchGNSSCheckbox.setText(_translate("MainWindow", "Match GNSS period"))
-        self.turbidityNumSamplesLabel.setText(_translate("MainWindow", "Number of samples @ 1Hz"))
-
     def assembleBinaryConfigFile(self):
         get_int_from_str = lambda s: int(re.search(r'\d+', s).group()) if re.search(r'\d+', s) else None
 
@@ -558,60 +518,38 @@ class Ui_MainWindow(object):
             
             Definition of configuration struct from configuration.h in firmware files
 
-            typedef struct microSWIFT_configuration
+            typedef struct __attribute__((packed)) microSWIFT_configuration
             {
               uint32_t tracking_number;
-              uint32_t samples_per_window;
+              uint32_t gnss_samples_per_window;
               uint32_t duty_cycle;
               uint32_t iridium_max_transmit_time;
               uint32_t gnss_max_acquisition_wait_time;
               uint32_t gnss_sampling_rate;
-              uint32_t total_ct_samples;
-              uint32_t total_temp_samples;
               uint32_t total_light_samples;
+              uint32_t light_sensor_gain;
               uint32_t total_turbidity_samples;
-
+            
               bool iridium_v3f;
               bool gnss_high_performance_mode;
               bool ct_enabled;
               bool temperature_enabled;
               bool light_enabled;
               bool turbidity_enabled;
+            
+              const char compile_date_flash[11];
+              const char compile_time_flash[9];
             } microSWIFT_configuration;
             
             In microSWIFT.ld:
             
+              /* Custom variables (firmware version, compile date/time, etc) */
               .uservars :
               {
                 /* Variables contained in type microSWIFT_configuration contained in configuration.h */
-                KEEP(*(.uservars.TRACKING_NUMBER))
-                KEEP(*(.uservars.GNSS_SAMPLES_PER_WINDOW))
-                KEEP(*(.uservars.DUTY_CYCLE))
-                KEEP(*(.uservars.IRIDIUM_MAX_TX_TIME))
-                KEEP(*(.uservars.GNSS_MAX_ACQUISITION_TIME))
-                KEEP(*(.uservars.GNSS_SAMPLE_RATE))
-                KEEP(*(.uservars.TOTAL_CT_SAMPLES))
-                KEEP(*(.uservars.TOTAL_TEMP_SAMPLES))
-                KEEP(*(.uservars.TOTAL_LIGHT_SAMPLES))
-                KEEP(*(.uservars.TOTAL_TURBIDITY_SAMPLES))
-                KEEP(*(.uservars.IRIDIUM_V3F))
-                KEEP(*(.uservars.GNSS_HIGH_PERF_MODE))
-                KEEP(*(.uservars.CT_ENABLED))
-                KEEP(*(.uservars.TEMPERATURE_ENABLED))
-                KEEP(*(.uservars.LIGHT_ENABLED))
-                KEEP(*(.uservars.TURBIDITY_ENABLED))
-                /* Compiled in versioning variables */
-                KEEP(*(.uservars.VERSION_NUMBER))
-                KEEP(*(.uservars.COMPILATION_DATE))
-                KEEP(*(.uservars.COMPILATION_TIME))
+                KEEP(*(.uservars.CONFIGURATION))
                 *(.uservars*);
               } > USERVARS
-              
-            Thus, in totality, the config struct is the first element in the .uservars section, followed by:
-            VERSION_NUMBER:= typedef struct {uint8_t major_rev :4; uint8_t minor_rev :4;} microSWIFT_firmware_version_t;
-                !! Note this is a single byte for both fields !!
-            COMPILATION_DATE:= char[11] in the format "MM/DD/YYYY"
-            COMPILATION_TIME:= char[9] in the format "HH:MM:SS"
             '''
 
             current_datetime = datetime.now()
@@ -629,9 +567,8 @@ class Ui_MainWindow(object):
                                        int(self.iridiumTxTimeSpinBox.value()),
                                        int(self.gnssMaxAcquisitionTimeSpinBox.value()),
                                        get_int_from_str(self.gnssSampleRateComboBox.currentText()),
-                                       int(self.ctNumSamplesSpinBox.value()),
-                                       int(self.tempNumSamplesSpinBox.value()),
                                        int(self.lightNumSamplesSpinBox.value()),
+                                       # add light gain here
                                        int(self.turbidityNumSamplesSpinBox.value()),
                                        bool(self.iridiumTypeComboBox.currentText() == "V3F"),
                                        bool(self.gnssHighPerformanceModeCheckBox.isChecked()),
@@ -639,7 +576,6 @@ class Ui_MainWindow(object):
                                        bool(self.tempEnableButton.isChecked()),
                                        bool(self.lightEnableButton.isChecked()),
                                        bool(self.turbidityEnableButton.isChecked()),
-                                       int(FIRMWARE_MAJOR_VERSION | (FIRMWARE_MINOR_VERSION << 4)),
                                        bytes(date.encode("utf-8")),
                                        bytes(time.encode("utf-8"))
                                        )
@@ -656,13 +592,19 @@ class Ui_MainWindow(object):
         self.gnssSampleRateComboBox.addItem("4 Hz")
         self.gnssSampleRateComboBox.addItem("5 Hz")
 
+        self.lightGainComboBox.addItem("0.5x")
+        self.lightGainComboBox.addItem("1x")
+        self.lightGainComboBox.addItem("2x")
+        self.lightGainComboBox.addItem("4x")
+        self.lightGainComboBox.addItem("8x")
+        self.lightGainComboBox.addItem("16x")
+        self.lightGainComboBox.addItem("32x")
+        self.lightGainComboBox.addItem("64x")
+        self.lightGainComboBox.addItem("128x")
+        self.lightGainComboBox.addItem("256x")
+        self.lightGainComboBox.addItem("512x")
+
     def disableAllOptionalSensors(self):
-        self.ctNumSamplesLabel.setDisabled(True)
-        self.ctNumSamplesSpinBox.setDisabled(True)
-
-        self.tempNumSamplesLabel.setDisabled(True)
-        self.tempNumSamplesSpinBox.setDisabled(True)
-
         self.lightNumSamplesLabel.setDisabled(True)
         self.lightNumSamplesSpinBox.setDisabled(True)
 
@@ -688,8 +630,6 @@ class Ui_MainWindow(object):
         self.verifyButton.clicked.connect(self.verifySettings)
         self.programButton.clicked.connect(self.programDevice)
 
-        self.ctNumSamplesSpinBox.valueChanged.connect(self.resetVerifyButton)
-        self.tempNumSamplesSpinBox.valueChanged.connect(self.resetVerifyButton)
         self.lightNumSamplesSpinBox.valueChanged.connect(self.resetVerifyButton)
         self.turbidityNumSamplesSpinBox.valueChanged.connect(self.resetVerifyButton)
         self.iridiumTxTimeSpinBox.valueChanged.connect(self.resetVerifyButton)
@@ -707,21 +647,13 @@ class Ui_MainWindow(object):
 
     def onCtEnabledClick(self):
         if self.ctEnableButton.isChecked():
-            self.ctNumSamplesLabel.setEnabled(True)
-            self.ctNumSamplesSpinBox.setEnabled(True)
-        else:
-            self.ctNumSamplesLabel.setDisabled(True)
-            self.ctNumSamplesSpinBox.setDisabled(True)
+            self.tempEnableButton.setChecked(False)
 
         self.resetVerifyButton()
 
     def onTempEnabledClick(self):
         if self.tempEnableButton.isChecked():
-            self.tempNumSamplesLabel.setEnabled(True)
-            self.tempNumSamplesSpinBox.setEnabled(True)
-        else:
-            self.tempNumSamplesLabel.setDisabled(True)
-            self.tempNumSamplesSpinBox.setDisabled(True)
+            self.ctEnableButton.setChecked(False)
 
         self.resetVerifyButton()
 
@@ -730,10 +662,14 @@ class Ui_MainWindow(object):
             self.lightNumSamplesLabel.setEnabled(True)
             self.lightNumSamplesSpinBox.setEnabled(True)
             self.lightMatchGNSSCheckbox.setEnabled(True)
+            self.lightGainLabel.setEnabled(True)
+            self.lightGainComboBox.setEnabled(True)
         else:
             self.lightNumSamplesLabel.setDisabled(True)
             self.lightNumSamplesSpinBox.setDisabled(True)
             self.lightMatchGNSSCheckbox.setDisabled(True)
+            self.lightGainLabel.setDisabled(True)
+            self.lightGainComboBox.setDisabled(True)
 
         self.resetVerifyButton()
 
@@ -803,10 +739,6 @@ class Ui_MainWindow(object):
         verify_strings = []
 
         # Pull all the values from the UI
-        ct_enabled = self.ctEnableButton.isChecked()
-        ct_num_samples = self.ctNumSamplesSpinBox.value()
-        temp_enabled = self.tempEnableButton.isChecked()
-        temp_num_samples = self.tempNumSamplesSpinBox.value()
         light_enabled = self.lightEnableButton.isChecked()
         light_num_samples = self.lightNumSamplesSpinBox.value()
         turbidity_enabled = self.turbidityEnableButton.isChecked()
@@ -821,10 +753,6 @@ class Ui_MainWindow(object):
 
         if (duty_cycle - gnss_duration - iridium_tx_time) < 0:
             verify_strings.append("Duty cycle not long enough to complete GNSS sample window.\n")
-            settings_invalid = True
-
-        if ct_enabled and ((((ct_num_samples * 2) + 20) / 60) > 2):
-            verify_strings.append("CT sampling window greater than allotted time of 2 mins.\n")
             settings_invalid = True
 
         if light_enabled:
@@ -856,7 +784,7 @@ class Ui_MainWindow(object):
 
             write_string = "".join(verify_strings)
 
-            self.writeText(write_string)
+            self.writeError(write_string)
         else:
             self.programButton.setEnabled(True)
             self.verifyButton.setStyleSheet("""
@@ -868,6 +796,8 @@ class Ui_MainWindow(object):
             self.writeText("Settings verified. You did a great job.")
 
     def resetVerifyButton(self):
+        self.colorScheme = QGuiApplication.styleHints().colorScheme()
+
         self.programButton.setDisabled(True)
         self.verifyButton.setStyleSheet("""
                 background-color: gray;
@@ -891,7 +821,11 @@ class Ui_MainWindow(object):
         self.statusTextEdit.clear()
 
         char_format = QTextCharFormat()
-        char_format.setForeground(QColor('white'))
+
+        if self.colorScheme == Qt.ColorScheme.Dark:
+            char_format.setForeground(QColor('white'))
+        else:
+            char_format.setForeground(QColor('black'))
 
         self.statusTextEdit.setCurrentCharFormat(char_format)
 
@@ -899,7 +833,11 @@ class Ui_MainWindow(object):
 
     def appendText(self, string):
         char_format = QTextCharFormat()
-        char_format.setForeground(QColor('white'))
+
+        if self.colorScheme == Qt.ColorScheme.Dark:
+            char_format.setForeground(QColor('white'))
+        else:
+            char_format.setForeground(QColor('black'))
 
         self.statusTextEdit.setCurrentCharFormat(char_format)
 
@@ -953,12 +891,8 @@ class Ui_MainWindow(object):
 
     def reenableGUI(self):
         self.ctEnableButton.setEnabled(True)
-        if self.ctEnableButton.isChecked():
-            self.ctNumSamplesSpinBox.setEnabled(True)
 
         self.tempEnableButton.setEnabled(True)
-        if self.tempEnableButton.isChecked():
-            self.tempNumSamplesSpinBox.setEnabled(True)
 
         self.lightEnableButton.setEnabled(True)
         if self.lightEnableButton.isChecked():
