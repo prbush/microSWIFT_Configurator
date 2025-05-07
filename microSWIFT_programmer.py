@@ -1,25 +1,52 @@
 #!/usr/bin/python3
-from datetime import datetime
-import os
 import platform
 import struct
 import sys
-
-from PyQt6 import QtCore, QtGui, QtWidgets
+import os
+import requests
 import serial.tools.list_ports
 import re
 import subprocess
 
+from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtGui import QTextCharFormat, QColor
 from PyQt6.QtWidgets import QGraphicsScene, QGraphicsPixmapItem
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtCore import pyqtSignal, QThread
 
+from datetime import datetime
+
+from git import Repo
+
 FIRMWARE_MAJOR_VERSION = 2
 FIRMWARE_MINOR_VERSION = 2
 
 
-# Add file save button that saves configuration and the output of STM programmer.
+def download_microSWIFT_firmware():
+    # Raw file URL on GitHub
+    url = "https://github.com/SASlabgroup/microSWIFT-V2-Binaries/raw/main/V2.2/microSWIFT_V2.2.elf"
+
+    # Define local path to save the file
+    firmware_dir = os.path.join(os.path.dirname(__file__), "firmware")
+    local_file_path = os.path.join(firmware_dir, "microSWIFT_V2.2.elf")
+
+    # Ensure the firmware directory exists
+    os.makedirs(firmware_dir, exist_ok=True)
+
+    try:
+        response = requests.get(url, stream=True)
+        response.raise_for_status()  # Raise an error on bad HTTP status
+
+        # Write the file (overwrite if exists)
+        with open(local_file_path, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=8192):
+                f.write(chunk)
+
+        print("Firmware file downloaded and saved successfully.")
+        return True
+    except requests.RequestException as e:
+        print(f"Failed to download the firmware file: {e}")
+        return False
 
 class Worker(QThread):
     finished = pyqtSignal()
@@ -743,9 +770,6 @@ class Ui_MainWindow(object):
         self.resetVerifyButton()
 
     def find_usb_port(self):
-        # Vendor ID and Product ID for STLink V3
-        VENDOR_ID = 0x0483  # STMicroelectronics
-        PRODUCT_ID = 0x374E  # STLink V3
 
         # List all available serial ports
         ports = serial.tools.list_ports.comports()
@@ -753,8 +777,8 @@ class Ui_MainWindow(object):
         stlink_ports = []
 
         for port in ports:
-            # Check if the port matches the STLink V3 vendor and product IDs
-            if port.vid == VENDOR_ID and port.pid == PRODUCT_ID:
+            # Check if the port is an STLINK
+            if "STLINK" in port.description:
                 stlink_ports.append(port.device)
                 break
 
@@ -973,10 +997,21 @@ class Ui_MainWindow(object):
 
 
 if __name__ == "__main__":
+    repo_owner = "SASlabgroup"
+    repo_name = "microSWIFT-V2-Binaries"
+    remote_file_path = "V2.2/microSWIFT_V2.2.elf"
+    local_file_path = "firmware/microSWIFT_V2.2.elf"
+
+    # You can optionally provide your GitHub token here to avoid rate limiting
+    github_auth_token = None  # Replace with your token if you have one
+
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
+    firmware_updated = download_microSWIFT_firmware()
+    if not firmware_updated:
+        sys.exit(1)
     MainWindow.show()
     sys.exit(app.exec())
 
